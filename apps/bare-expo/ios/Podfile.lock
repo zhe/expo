@@ -693,7 +693,7 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.3.0):
+  - RNScreens (3.4.0):
     - React-Core
     - React-RCTImage
   - RNSharedElement (0.7.0):
@@ -1216,7 +1216,7 @@ SPEC CHECKSUMS:
   EXBrightness: b0eb62f204669cd7ae926847794b5bfabd595a4f
   EXCalendar: 64807f071c86ef3d9813fec49f55c38d5854c235
   EXCamera: 5a90a462cd0965bbf5e5ddb725115ac5109869e9
-  EXCellular: 82f7267f13f296f37434d0031e9a214bbd4b8919
+  EXCellular: 371c2e49e9de09e129ccebbefdb30dfadbd177b7
   EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
   EXConstants: 7025f7965e87340f8e7493edc7062071ff48449f
   EXContacts: bc06f42aa1bc7fb5ed0f5b29287f772faa33ad55
@@ -1342,13 +1342,13 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
   RNGestureHandler: e66feb0fda7da74ea6a3094656b3c1efe05f5c07
   RNReanimated: d9da990fc90123f4ffbfdda93d00fc15174863a8
-  RNScreens: bf59f17fbf001f1025243eeed5f19419d3c11ef2
+  RNScreens: 21b73c94c9117e1110a79ee0ee80c93ccefed8ce
   RNSharedElement: 00b1a1420d213a34459bb9a5aacabb38107d7948
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   SDWebImage: 7acbb57630ac7db4a495547fb73916ff3e432f6b
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
-  UMCore: 912510bbff567298d738590f17788a8516f9d7f3
-  UMReactNativeAdapter: ee750f3cf40e149643f9191de3ce8c02202f198f
+  UMCore: 13555ae40690cf77b62c6f07bca9c2d973bf3717
+  UMReactNativeAdapter: 6b7768ea8787f5fb559ac9642fb92f349c1367ed
   UMTaskManagerInterface: 2be431101b73604e64fbfffcf759336f9d8fccbb
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
