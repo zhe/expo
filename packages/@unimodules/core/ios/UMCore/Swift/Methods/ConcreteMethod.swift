@@ -33,7 +33,7 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
 
   public func call(args: [Any?], promise: Promise) {
     let takesPromise = self.takesPromise
-    let returnedValue: ReturnType?
+    let returnedValue: AnyMethodArgument?
 
     do {
       var finalArgs = try castArguments(args)
@@ -43,7 +43,7 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
       }
 
       let tuple = try Conversions.toTuple(finalArgs) as! Args
-      returnedValue = closure(tuple)
+      returnedValue = Conversions.toExportable(closure(tuple))
     } catch let error {
       promise.reject(error)
       return

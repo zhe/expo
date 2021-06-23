@@ -1,5 +1,19 @@
 
 internal class Conversions {
+  static func toExportable<ReturnType>(_ value: ReturnType) -> AnyMethodArgument {
+    if let value = value as? AnyMethodArgument {
+      return value
+    }
+    return 0
+  }
+
+  /**
+   Converts raw representable values (typed enums) to the exportable type.
+   */
+  static func toExportable<ReturnType>(_ value: ReturnType) -> AnyMethodArgument where ReturnType: RawRepresentable {
+    return toExportable(value.rawValue)
+  }
+
   /**
    Converts an array to tuple. Because of tuples nature, it's not possible to convert an array of any size, so we can support only up to some fixed size.
    */
@@ -31,4 +45,8 @@ internal class Conversions {
       throw Errors.ArrayTooLong(size: array.count, limit: 10)
     }
   }
+}
+
+fileprivate func normalizeMirrorChildLabel(_ label: String) -> String {
+  return label.starts(with: "_") ? String(label.dropFirst()) : label
 }
