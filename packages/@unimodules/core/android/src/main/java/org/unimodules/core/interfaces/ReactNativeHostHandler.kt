@@ -26,7 +26,20 @@ interface ReactNativeHostHandler {
 
   /**
    * Given chance for JSI modules to register, e.g. for react-native-reanimated
+   *
+   * @param reactApplicationContext React Native app context
+   * @param jsContext JavaScript context
    */
-  fun onRegisterJSIModules(reactApplicationContext: ReactApplicationContext, jsContext: JavaScriptContextHolder) {
+  fun onRegisterJSIModules(reactApplicationContext: ReactApplicationContext,
+                           jsContext: JavaScriptContextHolder) {
+  }
+
+  /**
+   * Event callback before createReactInstanceManager
+   *
+   * @param useDeveloperSupport true if using developer support tools,
+   *                            typically equals to BuildConfig.DEBUG
+   */
+  fun onWillCreateReactInstanceManager(useDeveloperSupport: Boolean) {
   }
 }

@@ -28,6 +28,8 @@ abstract class ReactNativeHostWrapper(application: Application) : ReactNativeHos
   }
 
   override fun createReactInstanceManager(): ReactInstanceManager {
+    reactNativeHostHandlers.forEach { it.onWillCreateReactInstanceManager(useDeveloperSupport) }
+
     ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_START)
     val builder = ReactInstanceManager.builder()
       .setApplication(application)
