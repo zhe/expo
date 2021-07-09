@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.WindowManager
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.LifecycleEventListener
@@ -38,13 +39,14 @@ import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuSettings
+import expo.modules.devmenu.overlay.DevMenuBottomOverlayViewInflater
+import expo.modules.devmenu.overlay.DevMenuOverlayManager
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
 import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
-
   private var shakeDetector: ShakeDetector? = null
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
   private var session: DevMenuSession? = null
@@ -56,6 +58,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
   private var currentScreenName: String? = null
   private val expoApiClient = DevMenuExpoApiClient()
+  private lateinit var overlayManager: DevMenuOverlayManager
 
   //region helpers
 
@@ -157,6 +160,13 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private fun maybeInitDevMenuHost(application: Application) {
     if (!this::devMenuHost.isInitialized) {
       devMenuHost = DevMenuHost(application)
+      overlayManager = DevMenuOverlayManager(application.getSystemService(Context.WINDOW_SERVICE) as WindowManager, DevMenuBottomOverlayViewInflater(application)) {
+
+        delegateActivity?.let {
+          toggleMenu(it)
+        }
+      }
+
       UiThreadUtil.runOnUiThread {
         devMenuHost.reactInstanceManager.createReactContextInBackground()
 
@@ -216,7 +226,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       if (shouldLaunchDevMenuOnStart) {
         reactContext.addLifecycleEventListener(this)
       }
+
     }
+
+    overlayManager.showOverlay()
   }
 
   //endregion
@@ -286,6 +299,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   //region DevMenuManagerProtocol
 
   override fun openMenu(activity: Activity, screen: String?) {
+    overlayManager.hideOverlay()
+
     setCurrentScreen(null)
     session = DevMenuSession(
       initReactInstanceManager = delegate!!.reactInstanceManager(),
@@ -306,6 +321,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   override fun hideMenu() {
+    overlayManager.showOverlay()
+
     setCurrentScreen(null)
     hostActivity?.finish()
   }
