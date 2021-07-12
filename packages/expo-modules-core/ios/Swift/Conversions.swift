@@ -1,14 +1,41 @@
 
+public protocol PrimitiveValue {}
+extension Bool: PrimitiveValue {}
+extension Int: PrimitiveValue {}
+extension Double: PrimitiveValue {}
+extension String: PrimitiveValue {}
+
+extension RawRepresentable {
+  func asAny() -> Any {
+    return rawValue
+  }
+}
+
 internal class Conversions {
-  static func toExportable<ReturnType>(_ value: ReturnType) -> AnyMethodArgument? {
-    return value as? AnyMethodArgument
+  /**
+   Converts given value to the exportable type.
+   */
+  static func toExportable(_ value: Any?) -> AnyMethodArgument? {
+    if let value = value as? PrimitiveValue {
+      return value as? AnyMethodArgument
+    }
+    if let value = value as? DictionaryConvertible {
+      return value.toDictionary()
+    }
+    return nil
   }
 
   /**
    Converts raw representable values (typed enums) to the exportable type.
+   `RawRepresentable` is a protocol with associated types so it can only be used with `where` clause.
    */
-  static func toExportable<ReturnType>(_ value: ReturnType) -> AnyMethodArgument? where ReturnType: RawRepresentable {
-    return toExportable(value.rawValue)
+  static func toExportable<T: RawRepresentable>(_ value: T?) -> AnyMethodArgument? where T.RawValue: AnyMethodArgument {
+    print("toExportable: RawRepresentable")
+    return toExportable(value?.rawValue)
+  }
+
+  static func unwrapRawValue<T: RawRepresentable>(_ value: T) -> PrimitiveValue where T.RawValue: PrimitiveValue {
+    return value.rawValue
   }
 
   /**

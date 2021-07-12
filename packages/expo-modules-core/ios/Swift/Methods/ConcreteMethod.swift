@@ -1,16 +1,28 @@
 
+func castReturnValue<T>(_ value: T) -> AnyMethodArgument {
+  print(String(describing: T.self))
+  let m = Mirror(reflecting: value)
+  return Conversions.toExportable(value)!
+}
+
+func castReturnValue<T>(_ value: T) -> AnyMethodArgument where T: RawRepresentable {
+  return Conversions.toExportable(value.rawValue)!
+}
+
+public enum TestEnum: Int {
+  case zero = 0
+  case one = 1
+  case two = 2
+}
+
 public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
   public typealias ClosureType = (Args) -> ReturnType
 
   public let name: String
 
-  public var takesPromise: Bool {
-    return argTypes.last?.canCast(Promise.self) ?? false
-  }
+  public let takesPromise: Bool
 
-  public var argumentsCount: Int {
-    return argTypes.count - (takesPromise ? 1 : 0)
-  }
+  public let argumentsCount: Int
 
   public var queue: DispatchQueue?
 
@@ -28,27 +40,22 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
     self.argTypes = argTypes
     self.queue = queue
     self.closure = closure
+    self.takesPromise = argTypes.last?.canCast(Promise.self) ?? false
+    self.argumentsCount = argTypes.count - (takesPromise ? 1 : 0)
   }
 
   public func call(args: [Any?], promise: Promise) {
-    let takesPromise = self.takesPromise
-    let returnedValue: ReturnType?
-
     do {
-      var finalArgs = try castArguments(args)
-
-      if takesPromise {
-        finalArgs.append(promise)
-      }
-
+      let finalArgs = try castArguments(args) + (takesPromise ? [promise] : [])
       let tuple = try Conversions.toTuple(finalArgs) as! Args
-      returnedValue = closure(tuple)
+      let returnedValue = closure(tuple)
+
+      if !takesPromise {
+        let castedReturn = castReturnValue(returnedValue)
+        promise.resolve(castedReturn)
+      }
     } catch let error {
       promise.reject(error)
-      return
-    }
-    if !takesPromise {
-      promise.resolve(returnedValue)
     }
   }
 

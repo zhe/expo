@@ -1889,7 +1889,7 @@ PODS:
   - EXLinearGradient (9.2.0):
     - UMCore
   - EXLocalAuthentication (11.1.0):
-    - UMCore
+    - ExpoModulesCore
   - EXLocalization (10.2.0):
     - UMCore
   - EXLocation (12.1.0):
@@ -4034,7 +4034,7 @@ SPEC CHECKSUMS:
   EXCamera: 5a90a462cd0965bbf5e5ddb725115ac5109869e9
   EXCellular: c023099c6d53230d69c03a0ed0b515fbf2ffc5eb
   EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
-  EXConstants: 4c1e78f8711b0991bf5bbd37a574e93e7a44a438
+  EXConstants: abbb7d6af1bab55debdb7ac1b9def07033ca35ee
   EXContacts: bc06f42aa1bc7fb5ed0f5b29287f772faa33ad55
   EXCrypto: 46e28f1eb7ec3e2ae5aab652fe1dc4d46bafb386
   EXDevice: 6f1eed02c099f5b382a12a40406c58868892aba6
@@ -4055,7 +4055,7 @@ SPEC CHECKSUMS:
   EXImagePicker: 958720afb9395ee1168dcda28d9915345c4e7cae
   EXKeepAwake: f4105ef469be7b283f66ce2d7234bb71ac80cd26
   EXLinearGradient: f9ea3259f096b27008860ca50764184225dc71c9
-  EXLocalAuthentication: e6347880c31bc3b9693933780d3bc84823fe0698
+  EXLocalAuthentication: 6c8c4c4f00457abe5721e2da2ee0f57fae9eb8e0
   EXLocalization: 356f4e16a606cec21a77d6250528fde526152b45
   EXLocation: bdf1af6aa8fc4f4dc1fd21aa39760484026f8a5d
   EXMailComposer: 3eefb2b73dd4587856a8b1f82daaed6156451b36

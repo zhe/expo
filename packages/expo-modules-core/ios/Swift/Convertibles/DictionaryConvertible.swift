@@ -10,7 +10,7 @@ public protocol DictionaryConvertible: AnyMethodArgument {
 /**
  Provides the default implementation of `ConvertibleFromDictionary` protocol.
  */
-extension DictionaryConvertible {
+public extension DictionaryConvertible {
   /**
    Initializes an object from given dictionary. Only members wrapped by `@bind` will be set in the object.
    */
@@ -25,7 +25,7 @@ extension DictionaryConvertible {
   /**
    Converts an object back to the dictionary. Only members wrapped by `@bind` will be set in the dictionary.
    */
-  public func toDictionary() -> [String: Any?] {
+  func toDictionary() -> [String: Any?] {
     var dict = [String: Any?]()
 
     forEachBoundMember(self) { key, value in
@@ -79,9 +79,4 @@ public class bind<Type>: AnyBoundValue {
   func set(_ newValue: Any?) {
     self.wrappedValue = newValue as! Type
   }
-}
-
-struct TestStruct: DictionaryConvertible {
-  @bind(key: "test")
-  var property: Int = 0
 }

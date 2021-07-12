@@ -17,8 +17,8 @@ public class CellularModule: Module {
         "mobileNetworkCode": carrier?.mobileNetworkCode
       ]
     }
-    method("getCellularGenerationAsync") { () -> Int in
-      Self.currentCellularGeneration().rawValue
+    method("getCellularGenerationAsync") { () -> CellularGeneration in
+      Self.currentCellularGeneration()
     }
   }
 
