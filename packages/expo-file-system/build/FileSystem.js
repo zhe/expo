@@ -124,7 +124,7 @@ export function createDownloadResumable(uri, fileUri, options, callback, resumeD
 export function createUploadTask(url, fileUri, options, callback) {
     return new UploadTask(url, fileUri, options, callback);
 }
-export class NetworkTask {
+export class FileSystemCancellableNetworkTask {
     constructor() {
         this._uuid = uuidv4();
         this.taskWasCanceled = false;
@@ -138,7 +138,7 @@ export class NetworkTask {
         this.taskWasCanceled = true;
         return await ExponentFileSystem.networkTaskCancelAsync(this.uuid);
     }
-    checkIfTaskWasCanceled() {
+    isTaskCancelled() {
         if (this.taskWasCanceled) {
             console.warn('This task was already canceled.');
             return true;
@@ -169,7 +169,7 @@ export class NetworkTask {
         this.subscription = null;
     }
 }
-export class UploadTask extends NetworkTask {
+export class UploadTask extends FileSystemCancellableNetworkTask {
     constructor(url, fileUri, options, callback) {
         super();
         this.url = url;
@@ -194,8 +194,8 @@ export class UploadTask extends NetworkTask {
         if (!ExponentFileSystem.uploadTaskStartAsync) {
             throw new UnavailabilityError('expo-file-system', 'uploadTaskStartAsync');
         }
-        if (this.checkIfTaskWasCanceled()) {
-            return undefined;
+        if (this.isTaskCancelled()) {
+            return;
         }
         this.addSubscription();
         const result = await ExponentFileSystem.uploadTaskStartAsync(this.url, this.fileUri, this.uuid, this.options);
@@ -203,7 +203,7 @@ export class UploadTask extends NetworkTask {
         return result;
     }
 }
-export class DownloadResumable extends NetworkTask {
+export class DownloadResumable extends FileSystemCancellableNetworkTask {
     constructor(url, _fileUri, options = {}, callback, resumeData) {
         super();
         this.url = url;
@@ -225,8 +225,8 @@ export class DownloadResumable extends NetworkTask {
         if (!ExponentFileSystem.downloadResumableStartAsync) {
             throw new UnavailabilityError('expo-file-system', 'downloadResumableStartAsync');
         }
-        if (this.checkIfTaskWasCanceled()) {
-            return undefined;
+        if (this.isTaskCancelled()) {
+            return;
         }
         this.addSubscription();
         return await ExponentFileSystem.downloadResumableStartAsync(this.url, this._fileUri, this.uuid, this.options, this.resumeData);
@@ -235,7 +235,7 @@ export class DownloadResumable extends NetworkTask {
         if (!ExponentFileSystem.downloadResumablePauseAsync) {
             throw new UnavailabilityError('expo-file-system', 'downloadResumablePauseAsync');
         }
-        if (this.checkIfTaskWasCanceled()) {
+        if (this.isTaskCancelled()) {
             return {
                 fileUri: this._fileUri,
                 options: this.options,
@@ -256,8 +256,8 @@ export class DownloadResumable extends NetworkTask {
         if (!ExponentFileSystem.downloadResumableStartAsync) {
             throw new UnavailabilityError('expo-file-system', 'downloadResumableStartAsync');
         }
-        if (this.checkIfTaskWasCanceled()) {
-            return undefined;
+        if (this.isTaskCancelled()) {
+            return;
         }
         this.addSubscription();
         return await ExponentFileSystem.downloadResumableStartAsync(this.url, this.fileUri, this.uuid, this.options, this.resumeData);
