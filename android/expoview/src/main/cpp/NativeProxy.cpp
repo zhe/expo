@@ -9,6 +9,7 @@
 
 #if FOR_HERMES
 #import <hermes/hermes.h>
+#include <hermes/Public/RuntimeConfig.h>
 #else
 #import <jsi/JSCRuntime.h>
 #endif
@@ -95,10 +96,14 @@ void NativeProxy::installJSIBindings()
   };
 
 #if FOR_HERMES
-  auto animatedRuntime = jsc::makeJSCRuntime();
+  ::hermes::vm::RuntimeConfig runtimeConfig = ::hermes::vm::RuntimeConfig::Builder()
+      .withES6Proxy(true)
+      .build();
+  auto animatedRuntime = facebook::hermes::makeHermesRuntime(runtimeConfig);
 #else
   auto animatedRuntime = facebook::jsc::makeJSCRuntime();
 #endif
+  runtime_->global().setProperty(*runtime_, "_WORKLET_RUNTIME", static_cast<double>(reinterpret_cast<std::uintptr_t>(animatedRuntime.get())));
 
   std::shared_ptr<ErrorHandler> errorHandler = std::make_shared<AndroidErrorHandler>(scheduler_);
 

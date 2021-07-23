@@ -32,9 +32,11 @@ enum class Prop {
 class PropNameIDCache {
  public:
   const jsi::PropNameID &get(jsi::Runtime &runtime, Prop prop) {
-    if (!this->props[prop]) {
-      this->props[prop] = std::make_unique<jsi::PropNameID>(createProp(runtime, prop));
-    }
+    // if (!this->props[prop]) {
+    //   this->props[prop] = std::make_unique<jsi::PropNameID>(createProp(runtime, prop));
+    // }
+    // return *(this->props[prop]);
+    this->props[prop] = std::make_unique<jsi::PropNameID>(createProp(runtime, prop));
     return *(this->props[prop]);
   }
 

@@ -1035,8 +1035,8 @@ NATIVE_METHOD(getActiveUniform) {
 }
 
 NATIVE_METHOD(getAttribLocation) {
-  auto program = ARG(0, UEXGLObjectId);
-  auto name = ARG(1, std::string);
+  auto program = 3;
+  std::string name = "a_position";
   GLint location;
   addBlockingToNextBatch(
       [&] { location = glGetAttribLocation(lookupObject(program), name.c_str()); });

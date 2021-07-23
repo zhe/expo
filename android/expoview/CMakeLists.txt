@@ -9,7 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 
 set(PACKAGE_NAME "reanimated")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
-set(NODE_MODULES_DIR "../node_modules")
+set(NODE_MODULES_DIR "../../node_modules")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/${ANDROID_ABI})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_OUTPUT_DIR}/${ANDROID_ABI})
@@ -120,7 +120,7 @@ find_library(
         NO_CMAKE_FIND_ROOT_PATH
 )
 find_library(
-        GLOG_LIB 
+        GLOG_LIB
         glog
         PATHS ${LIBRN_DIR}
         NO_CMAKE_FIND_ROOT_PATH

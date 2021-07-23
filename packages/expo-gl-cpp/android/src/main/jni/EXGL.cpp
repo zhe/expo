@@ -7,6 +7,8 @@
 #include <jsi/jsi.h>
 #include "UEXGL.h"
 
+thread_local JNIEnv* threadLocalEnv;
+
 extern "C" {
 
 JNIEXPORT jint JNICALL
@@ -54,14 +56,21 @@ Java_expo_modules_gl_cpp_EXGL_EXGLContextGetObject
 JNIEXPORT void JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextSetFlushMethod
 (JNIEnv *env, jclass clazz, jint exglCtxId, jobject glContext) {
+  threadLocalEnv = env;
   jclass GLContextClass = env->GetObjectClass(glContext);
   jobject glContextRef = env->NewGlobalRef(glContext);
   jmethodID flushMethodRef = env->GetMethodID(GLContextClass, "flush", "()V");
 
-  std::function<void(void)> flushMethod = [env, glContextRef, flushMethodRef] {
-    env->CallVoidMethod(glContextRef, flushMethodRef);
+  std::function<void(void)> flushMethod = [glContextRef, flushMethodRef] {
+    threadLocalEnv->CallVoidMethod(glContextRef, flushMethodRef);
   };
   UEXGLContextSetFlushMethod(exglCtxId, flushMethod);
+}
+
+JNIEXPORT void JNICALL
+Java_expo_modules_gl_cpp_EXGL_EXGLRegisterThread
+(JNIEnv *env, jclass clazz) {
+  threadLocalEnv = env;
 }
 
 JNIEXPORT bool JNICALL

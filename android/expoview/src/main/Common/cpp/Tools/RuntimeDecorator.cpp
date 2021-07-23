@@ -23,6 +23,8 @@ void RuntimeDecorator::decorateRuntime(jsi::Runtime &rt, std::string label) {
   jsi::Function __reanimatedWorkletInit = jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "__reanimatedWorkletInit"), 1, dummyFunction);
 
   dummyGlobal.setProperty(rt, "__reanimatedWorkletInit", __reanimatedWorkletInit);
+  dummyGlobal.setProperty(rt, "other", rt.global().getPropertyNames(rt));
+  rt.global().setProperty(rt, "other", rt.global().getPropertyNames(rt));
   rt.global().setProperty(rt, "global", dummyGlobal);
 
   rt.global().setProperty(rt, "jsThis", jsi::Value::undefined());

@@ -23,7 +23,6 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.NotificationOnlyHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
@@ -264,7 +263,7 @@ public class VersionedUtils {
     final String deviceName = AndroidInfoHelpers.getFriendlyDeviceName();
 
     if (Constants.isStandaloneApp()) {
-      return new JSCExecutorFactory(appName, deviceName);
+      return new HermesExecutorFactory();
     }
 
     final Pair<Boolean, Integer> hermesBundlePair = parseHermesBundleHeader(instanceManagerBuilderProperties.jsBundlePath);
@@ -277,9 +276,7 @@ public class VersionedUtils {
     }
 
     final String jsEngineFromManifest = instanceManagerBuilderProperties.manifest.getAndroidJsEngine();
-    return (jsEngineFromManifest != null && jsEngineFromManifest.equals("hermes"))
-            ? new HermesExecutorFactory()
-            : new JSCExecutorFactory(appName, deviceName);
+    return new HermesExecutorFactory();
   }
 
   @NonNull

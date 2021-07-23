@@ -22,6 +22,7 @@
 #include <jsi/jsi.h>
 
 #include "EXGLNativeMethodsUtils.h"
+#include "EXPlatformUtils.h"
 #include "EXJSIUtils.h"
 #include "TypedArrayApi.h"
 
@@ -44,7 +45,7 @@ namespace gl_cpp {
 
 class InvalidateOnDestroyHostObject : public jsi::HostObject {
  public:
-  InvalidateOnDestroyHostObject() {}
+  InvalidateOnDestroyHostObject(uintptr_t cacheKey): key(cacheKey) {}
   virtual ~InvalidateOnDestroyHostObject() {
     invalidateJsiPropNameIDCache();
   }
@@ -55,6 +56,8 @@ class InvalidateOnDestroyHostObject : public jsi::HostObject {
   virtual std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) {
     return {};
   }
+ private:
+  uintptr_t key;
 };
 
 // --- EXGLContext -------------------------------------------------------------
@@ -189,30 +192,11 @@ class EXGLContext {
 
  public:
   EXGLContext(jsi::Runtime &runtime, UEXGLContextId exglCtxId) {
-    jsi::Object jsGl(runtime);
-    jsGl.setProperty(
-        runtime, jsi::PropNameID::forUtf8(runtime, "exglCtxId"), static_cast<double>(exglCtxId));
-    installMethods(runtime, jsGl, exglCtxId);
-    installConstants(runtime, jsGl);
-
-    // Save JavaScript object
-    jsi::Value jsContextMap = runtime.global().getProperty(runtime, "__EXGLContexts");
-    if (jsContextMap.isNull() || jsContextMap.isUndefined()) {
-      runtime.global().setProperty(runtime, "__EXGLContexts", jsi::Object(runtime));
-
-      // Property `__EXGLOnDestroyHostObject` of the global object will be released when entire `jsi::Runtime`
-      // is being destroyed and that will trigger destructor of `InvalidateOnDestroyHostObject` class which
-      // will invalidate JSI PropNameID cache.
-      runtime.global().setProperty(
-          runtime,
-          "__EXGLOnDestroyHostObject",
-          jsi::Object::createFromHostObject(runtime, std::make_shared<InvalidateOnDestroyHostObject>()));
+    attachToJsRuntime(runtime, exglCtxId);
+    jsi::Value workletRuntimeValue = runtime.global().getProperty(runtime, "_WORKLET_RUNTIME");
+    if (workletRuntimeValue.isNumber()) {
+        attachToJsRuntime(*reinterpret_cast<jsi::Runtime*>(static_cast<uintptr_t>(workletRuntimeValue.getNumber())), exglCtxId);
     }
-    runtime.global()
-        .getProperty(runtime, "__EXGLContexts")
-        .asObject(runtime)
-        .setProperty(runtime, jsi::PropNameID::forUtf8(runtime, std::to_string(exglCtxId)), jsGl);
-
     // Clear everything to initial values
     addToNextBatch([this] {
       std::string version = reinterpret_cast<const char *>(glGetString(GL_VERSION));
@@ -236,6 +220,38 @@ class EXGLContext {
         glViewport(0, 0, 300, 150);
       }
     });
+  }
+
+  void attachToJsRuntime(jsi::Runtime& runtime, UEXGLContextId exglCtxId) {
+    EXGLSysLog("runtimepointer %p", &runtime);
+    jsi::Object jsGl(runtime);
+    jsGl.setProperty(
+        runtime, jsi::PropNameID::forUtf8(runtime, "exglCtxId"), static_cast<double>(exglCtxId));
+    installMethods(runtime, jsGl, exglCtxId);
+    installConstants(runtime, jsGl);
+
+    // Save JavaScript object
+    jsi::Value jsContextMap = runtime.global().getProperty(runtime, "__EXGLContexts");
+    auto global = runtime.global();
+    if (jsContextMap.isNull() || jsContextMap.isUndefined()) {
+      global.setProperty(runtime, "__EXGLContexts", jsi::Object(runtime));
+
+      // Property `__EXGLOnDestroyHostObject` of the global object will be released when entire `jsi::Runtime`
+      // is being destroyed and that will trigger destructor of `InvalidateOnDestroyHostObject` class which
+      // will invalidate JSI PropNameID cache.
+      global.setProperty(
+          runtime,
+          "__EXGLOnDestroyHostObject",
+          jsi::Object::createFromHostObject(runtime, std::make_shared<InvalidateOnDestroyHostObject>(
+                  reinterpret_cast<uintptr_t>(&runtime)
+                  )));
+    }
+    global
+        .getProperty(runtime, "__EXGLContexts")
+        .asObject(runtime)
+        .setProperty(runtime, jsi::PropNameID::forUtf8(runtime, std::to_string(exglCtxId)), jsGl);
+
+
   }
 
   static EXGLContext *ContextGet(UEXGLContextId exglCtxId);
