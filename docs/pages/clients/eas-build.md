@@ -29,9 +29,9 @@ An example configuration would look like this:
     "release": {},
     "development": {
       "distribution": "internal",
-      "developmentClient": true,
+      "developmentClient": true
     }
-  },
+  }
 }
 ```
 </Tab>
