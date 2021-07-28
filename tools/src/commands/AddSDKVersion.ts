@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import semver from 'semver';
 
+import { getListOfPackagesAsync } from '../Packages';
 import { Platform, getNextSDKVersionAsync } from '../ProjectVersions';
 import * as AndroidVersioning from '../versioning/android';
 import * as IosVersioning from '../versioning/ios';
@@ -14,7 +15,7 @@ type ActionOptions = {
   vendored: string[];
   reinstall?: boolean;
   preventReinstall?: boolean;
-  package?: string;
+  packages?: string[];
 };
 
 async function getNextOrAskForSDKVersionAsync(platform: Platform): Promise<string | undefined> {
@@ -55,6 +56,9 @@ async function action(options: ActionOptions) {
     throw new Error('Next SDK version not found. Try to run with `--sdkVersion <SDK version>`.');
   }
   const sdkNumber = semver.major(sdkVersion);
+  const packages = (await getListOfPackagesAsync()).filter((pkg) =>
+    pkg.isVersionableOnPlatform(options.platform)
+  );
 
   switch (options.platform) {
     case 'ios':
@@ -62,11 +66,15 @@ async function action(options: ActionOptions) {
         await IosVersioning.versionVendoredModulesAsync(sdkNumber, options.vendored);
       } else if (options.filenames) {
         await IosVersioning.versionReactNativeIOSFilesAsync(options.filenames, sdkVersion);
-      } else if (options.package) {
-        await IosVersioning.regenerateVersionedPackageAsync(sdkVersion, options.package);
+      } else if (options.packages) {
+        await IosVersioning.versionExpoModulesAsync(
+          sdkNumber,
+          packages.filter((pkg) => options.packages?.includes(pkg.packageName))
+        );
+        // await IosVersioning.regenerateVersionedPackageAsync(sdkVersion, options.package);
       } else {
         await IosVersioning.versionVendoredModulesAsync(sdkNumber, null);
-        await IosVersioning.addVersionAsync(sdkVersion);
+        await IosVersioning.addVersionAsync(sdkVersion, packages);
       }
       await IosVersioning.reinstallPodsAsync(options.reinstall, options.preventReinstall);
       return;
@@ -121,9 +129,6 @@ ${chalk.gray('>')} ${chalk.italic.cyan(
       '--prevent-reinstall',
       'Whether to force not reinstalling pods after generating a new version. iOS only.'
     )
-    .option(
-      '-x, --package [string]',
-      'Only generate a specific package. When provided, option `--sdkVersion` is required.'
-    )
+    .option('-x, --packages <string...>', 'Name of the expo package to version.')
     .asyncAction(action);
 };
