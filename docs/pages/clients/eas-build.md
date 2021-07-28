@@ -19,32 +19,19 @@ If you have already have an `eas.json` file in your project, you'll need to upda
 
 <Tab >
 
-`expo-dev-client` does not modify your application's behavior in a build you would submit to the Play Store or App Store, so you must specify `development-client` as your `buildType` to create a custom development client.
+`expo-dev-client` does not modify your application's behavior in a build you would submit to the Play Store or App Store, so you must specify `developmentClient: true` to create a custom development client.
 To share the build with your internal team, use [`internal` distribution](/build/internal-distribution.md).
 
 An example configuration would look like this:
 ```json
 {
-  "builds": {
-    "android": {
-      "release": {
-        "buildType": "app-bundle"
-      },
-      "development": {
-        "distribution": "internal",
-        "buildType": "development-client"
-      }
-    },
-    "ios": {
-      "release": {
-        "buildType": "release"
-      },
-      "development": {
-        "distribution": "internal",
-        "buildType": "development-client"
-      }
+  "build": {
+    "release": {},
+    "development": {
+      "distribution": "internal",
+      "developmentClient": true,
     }
-  }
+  },
 }
 ```
 </Tab>
@@ -56,22 +43,14 @@ To share the build with your internal team, use [`internal` distribution](/build
 An example configuration would look like this:
 ```json
 {
-  "builds": {
-    "android": {
-      "release": {
-        "gradleCommand": ":app:bundleRelease"
-      },
-      "development": {
-        "distribution": "internal",
+  "build": {
+    "release": {},
+    "development": {
+      "distribution": "internal",
+      "android": {
         "gradleCommand": ":app:assembleDebug"
-      }
-    },
-    "ios": {
-      "release": {
-        "schemeBuildConfiguration": "Release"
       },
-      "development": {
-        "distribution": "internal",
+      "ios": {
         "schemeBuildConfiguration": "Debug"
       }
     }
