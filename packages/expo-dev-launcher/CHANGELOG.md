@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed issue where Expo-hosted manifest URLs with `/index.exp?...` suffix could not be opened properly.
+
 ### 💡 Others
 
 ## 0.6.5 — 2021-07-16
