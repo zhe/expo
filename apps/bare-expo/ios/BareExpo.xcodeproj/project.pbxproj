@@ -383,7 +383,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "$SRCROOT/Build-Phases/generate-dynamic-macros.sh\n";
+			shellScript = "bash -l -c \"$SRCROOT/Build-Phases/generate-dynamic-macros.sh\"\n";
 		};
 		21646C4223F2D1BA00CB927F /* Copy Bundle Resources Conditionally */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -441,7 +441,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "$SRCROOT/Build-Phases/generate-dynamic-macros.sh\n";
+			shellScript = "bash -l -c \"$SRCROOT/Build-Phases/generate-dynamic-macros.sh\"\n";
 		};
 		B2C0264C256BDB3E008FD925 /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
